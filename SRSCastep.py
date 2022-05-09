@@ -53,7 +53,8 @@ def readParam(name):
 
 
 ####################################################################################################
-# Writes parameter file
+# Writes parameter file.
+# Takes as input a dictionary file with the parameters to be written and writes the .param file.
 ####################################################################################################
 def writeParam(name,paramsDict):
 
@@ -80,7 +81,7 @@ def writeParam(name,paramsDict):
   return 
 
 ####################################################################################################
-# Reads in a cell file and returns as python dictionary
+# Reads in a cell file and returns as list
 ####################################################################################################
 def readCell(name):
   
@@ -105,6 +106,47 @@ def readCell(name):
   myfile.close()
   
   return cellFileContents
+
+
+####################################################################################################
+# Modify cell list
+# Takes as input a list of strings that is the original cell file
+# Modifies one part of it, which is specified by the option "param".
+####################################################################################################
+def modifyCell(cellList,param,value):
+
+  print("Modifying cell file, parameter:",param)
+  
+  newCellList = []
+
+  # how many lines in the cell list 
+  length = len(cellList)
+
+  # if parameter is "vac" meaning we are changing the vacuum (z) separation:
+  if param == 'vac':
+    i = 0 
+    while i < length:
+      words = cellList[i].split()
+      numwords = len(words)
+      if numwords > 0 and str.upper(words[0]) == '%BLOCK' and str.upper(words[1]) == 'LATTICE_CART':
+        break
+      i+=1
+
+    # The line number of the cellList that contains the z specification (assumes cubic cell)
+    cellLine = i+3
+
+    # modify
+    line = cellList[cellLine]
+    words = line.split()
+    newCellList = cellList
+    newCellList[cellLine] = "\t"+words[0]+"\t"+words[1]+"\t"+str(float(value))+"\n"
+
+  # THIS FUNCTION CAN BE MODIFIED TO ADD MORE POSSIBLE CHANGES TO A CELL FILE
+  # THIS CAN BE DONE BY ADDING HERE A STATEMENT:
+  # if param == 'yourparam'
+  # FOLLOWED BY SUITABLE CODE FOR SEARCHING AND MODIFYING THE CELL LIST
+  
+  return newCellList
 
 
 
