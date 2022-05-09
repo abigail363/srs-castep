@@ -24,28 +24,14 @@ if len(sys.argv) != 2:
     print("Error, expecting one input file name")
     sys.exit()
 
-
 # Get file name from command line options.
 readName=str(sys.argv[1])    # First argument on command line; specifies the coordinates in the desired orientation.
 
 # Read parameters from parameter file
-params = cas.readParam(readName)
+#params = cas.readParam(readName)
 
 # Read cell file 
-cellContents = cas.readCell(readName)
+unitcell, elements, coords, cellFileList = cas.readCellDetailed(readName)
 
-vacStart = 10
-vacEnd = 50
-vacSep = 5
-
-for i in range(vacStart,vacEnd,vacSep):
-    
-    # change value of the vacuum separation
-    cellContents = cas.modifyCell(cellContents,"vac",i)
-
-    # write output files
-    writeName = readName + "_" + "vac_"+str(i)
-    cas.writeParam(writeName,params)
-    cas.writeCell(writeName,cellContents)
-
-
+writename = readName+"_new"
+cas.writeCellDetailed(writename,unitcell, elements, coords, cellFileList)

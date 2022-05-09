@@ -109,6 +109,177 @@ def readCell(name):
 
 
 ####################################################################################################
+# Writes cell file
+####################################################################################################
+def writeCell(name,cellFileContents):
+
+  # add the .param extension
+  filename = name + ".cell"
+  
+  # Output to screen
+  print()
+  print("Opening "+ filename +" for writing...")
+
+  # Open file
+  myfile = open(filename, "w")
+      
+  for line in cellFileContents:
+    myfile.write(line)
+  print("DONE")
+  print()
+    
+  # Close file
+  myfile.close()
+  return
+
+
+####################################################################################################
+# Reads in a cell file and returns as list
+####################################################################################################
+def readCellDetailed(name):
+
+  import numpy as np
+  
+  # add the .param extension
+  filename = name + ".cell"
+  
+  # Output to screen
+  print()
+  print("Opening "+ filename + " for reading")
+
+  # Open file
+  with open(filename, "r") as myfile:
+    lines = myfile.readlines()
+
+  # number of lines in the file
+  numlines = len(lines)
+
+  # list to hold lines other than unit cell and coordinates
+  cellFileList = []
+  
+  # loop through the file
+  i = 0
+  while i < numlines:
+    words = lines[i].split()
+    numwords = len(words)
+    
+    # beginning of the unit cell definition. Read the three vectors as u, v, w, then combine to unitcell.
+    if numwords > 0 and str.upper(words[0]) == '%BLOCK' and str.upper(words[1]) == 'LATTICE_CART':
+      i+=1
+      words = lines[i].split()
+      u = np.array([float(words[0]),float(words[1]),float(words[2])])
+      i+=1
+      words = lines[i].split()
+      v = np.array([float(words[0]),float(words[1]),float(words[2])])
+      i+=1
+      words = lines[i].split()
+      w = np.array([float(words[0]),float(words[1]),float(words[2])])
+      i+=2 # this skips the %endblock statement
+      unitcell = np.array([u,v,w])
+
+    # read atomic coords (fractional)
+    if numwords > 0 and str.upper(words[0]) == '%BLOCK' and str.upper(words[1]) == 'POSITIONS_FRAC':
+      # loop through the coords until we get to the endblock statement and read each line into a list
+      stop = 'no'
+      coordsList = []
+      while stop == 'no':
+        i+=1
+        words = lines[i].split()
+        if str.upper(words[0]) == '%ENDBLOCK':
+          stop = 'yes'
+          break
+        coordsList.append(lines[i])
+      i+=1 # skip endblock statement
+      # process the list into numpy array
+      elements = []
+      coords = []
+      for line in coordsList:
+        words = line.split()
+        elements.append(words[0])
+        x = float(words[1]) * unitcell[0,0]
+        y = float(words[2]) * unitcell[1,1]
+        z = float(words[3]) * unitcell[2,2]
+        coords.append([x,y,z])
+      coords = np.array(coords)
+      elements = np.array(elements)
+      
+      
+
+    # read atomic coords (absolute)
+    if numwords > 0 and str.upper(words[0]) == '%BLOCK' and str.upper(words[1]) == 'POSITIONS_ABS':
+      # loop through the coords until we get to the endblock statement and read each line into a list
+      stop = 'no'
+      coordsList = []
+      while stop == 'no':
+        i+=1
+        words = lines[i].split()
+        if str.upper(words[0]) == '%ENDBLOCK':
+          stop = 'yes'
+          break
+        coordsList.append(lines[i])
+      i+=1 # skip endblock statement
+      # process the list into numpy array
+      elements = []
+      coords = []
+      for line in coordsList:
+        words = line.split()
+        elements.append(words[0])
+        coords.append([float(words[1]), float(words[2]), float(words[3])])
+      coords = np.array(coords)
+      elements = np.array(elements)
+
+    # write line to list
+    cellFileList.append(lines[i])
+    
+    # add one to loop counter
+    i+=1
+
+  return unitcell, elements, coords, cellFileList
+
+
+
+####################################################################################################
+# Writes cell file
+####################################################################################################
+def writeCellDetailed(name,unitcell,elements,coords,cellFileContents):
+
+  import numpy as np
+  # add the .param extension
+  filename = name + ".cell"
+  
+  # Output to screen
+  print()
+  print("Opening "+ filename +" for writing...")
+
+  # Open file
+  myfile = open(filename, "w")
+
+  # write unit cell
+  myfile.write('%BLOCK LATTICE_CART\n')
+  for vector in unitcell:
+    myfile.write('{:20}{:20}{:20}\n'.format(vector[0],vector[1],vector[2]))
+  myfile.write('%ENDBLOCK LATTICE_CART\n\n')
+
+  # write coords
+  myfile.write('%BLOCK POSITIONS_ABS\n')
+  xyz = np.vstack((elements.T,coords.T)).T
+  for line in xyz:
+    myfile.write('{:20}{:20}{:20}{:20}\n'.format(line[0],line[1],line[2],line[3]))
+  myfile.write('%ENDBLOCK POSITIONS_ABS\n\n')
+  
+  for line in cellFileContents:
+    myfile.write(line)
+
+  print("DONE")
+  print()
+    
+  # Close file
+  myfile.close()
+  return
+
+
+
+####################################################################################################
 # Modify cell list
 # Takes as input a list of strings that is the original cell file
 # Modifies one part of it, which is specified by the option "param".
@@ -150,31 +321,6 @@ def modifyCell(cellList,param,value):
 
 
 
-####################################################################################################
-# Writes cell file
-####################################################################################################
-def writeCell(name,cellFileContents):
-
-  # add the .param extension
-  filename = name + ".cell"
-  
-  # Output to screen
-  print()
-  print("Opening "+ filename +" for writing...")
-
-  # Open file
-  myfile = open(filename, "w")
-      
-  for line in cellFileContents:
-    myfile.write(line)
-  print("DONE")
-  print()
-    
-  # Close file
-  myfile.close()
-  return
-
-
 
 
 ####################################################################################################
@@ -194,6 +340,7 @@ def getInfoMultipleFiles():
     castepFileList.sort()
 
     # Initialise the lists and at the time define the list headers.
+    filenameList = ["Filename"]
     energyList = ["TotalE(eV)"]
     cutoffList = ["Cutoff(eV)"]
     bondList = ["Bondlength(Ang.)"]
@@ -234,6 +381,9 @@ def getInfoMultipleFiles():
             if numwords > 0 and words[0] == 'WARNING':
                 print(filename+": "+line)
 
+        nameNoExt = str(os.path.splitext(filename)[0])
+        
+        filenameList.append(nameNoExt)
         bondList.append(bondlength)
         energyList.append(finalE)
         cutoffList.append(cutoffE)
@@ -243,12 +393,13 @@ def getInfoMultipleFiles():
         myfile.close()
 
     # convert final lists to numpy arrays
+    filenameList = np.array(filenameList)
     cutoffList = np.array(cutoffList)
     energyList = np.array(energyList)
     bondList = np.array(bondList)
     warningsList = np.array(warningsList)
 
-    returnArray = np.transpose([cutoffList,energyList,bondList,warningsList])
+    returnArray = np.transpose([filenameList,cutoffList,energyList,bondList,warningsList])
 
     return returnArray
 
