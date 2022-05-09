@@ -28,10 +28,21 @@ if len(sys.argv) != 2:
 readName=str(sys.argv[1])    # First argument on command line; specifies the coordinates in the desired orientation.
 
 # Read parameters from parameter file
-#params = cas.readParam(readName)
+params = cas.readParam(readName)
 
 # Read cell file 
 unitcell, elements, coords, cellFileList = cas.readCellDetailed(readName)
 
-writename = readName+"_new"
-cas.writeCellDetailed(writename,unitcell, elements, coords, cellFileList)
+vacStart = 15
+vacEnd = 50
+vacSep = 5
+
+for zcell in range(vacStart,vacEnd+vacSep,vacSep):
+
+    unitcell[2,2] = zcell
+    
+    # write output files
+    writeName = readName + "_" + "vac_"+str(zcell)
+    cas.writeParam(writeName,params)
+    cas.writeCellDetailed(writeName,unitcell,elements,coords,cellFileList)
+
