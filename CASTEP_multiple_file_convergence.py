@@ -35,7 +35,7 @@ outputFilename = "multiple_file_output.txt"
 myfile = open(outputFilename, "w")
 for row in outputData:
     for col in range(numCategories):
-        myfile.write('{colentry:20}'.format(colentry=row[col]))
+        myfile.write('{colentry:20},  '.format(colentry=row[col]))
     myfile.write('\n')
 myfile.close()
 
