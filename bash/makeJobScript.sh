@@ -1,6 +1,6 @@
 #!/bin/bash
 #######################################################################################
-# Bash script for making castep input files for running on myriad@ucl.
+# Bash script for making gaussian input files for running on myriad@ucl.
 # Steven R. Schofield March 2022
 #######################################################################################
 

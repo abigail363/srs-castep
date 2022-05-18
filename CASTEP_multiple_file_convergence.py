@@ -35,12 +35,12 @@ outputFilename = "multiple_file_output.txt"
 myfile = open(outputFilename, "w")
 for row in outputData:
     for col in range(numCategories):
-        myfile.write('{colentry:20},  '.format(colentry=row[col]))
+        myfile.write('{colentry:15}\t'.format(colentry=row[col]))
     myfile.write('\n')
 myfile.close()
 
 # info
-print('Wrote output file',outputFilename,':\n')
+print('\nWrote output file',outputFilename,':\n')
 
 myfile = open(outputFilename, "r")
 for line in myfile:

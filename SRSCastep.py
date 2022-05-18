@@ -3,6 +3,7 @@
 ####################################################################################################
 # This code is for working with CASTEP files.
 # Steven R. Schofield, University College London, Apr. 2022
+# GNU General Public License v3.0
 ####################################################################################################
 
 ####################################################################################################
@@ -10,7 +11,7 @@
 ####################################################################################################
 def startscript():
   print("CASTEP tools")
-  print("Steven R. Schofield (CC-BY Apr 2022) University College London\n")
+  print("Steven R. Schofield (Apr 2022) University College London\n")
 
 ####################################################################################################
 # Reads in a parameter file and returns as python dictionary
@@ -338,12 +339,12 @@ def getInfoMultipleFiles():
             castepFileList.append(filename)
  
     castepFileList.sort()
-
+                
     # Initialise the lists and at the time define the list headers.
     filenameList = ["Filename"]
-    energyList = ["TotalE(eV)"]
-    cutoffList = ["Cutoff(eV)"]
-    bondList = ["Bondlength(Ang.)"]
+    energyList = ["TotalE"]
+    cutoffList = ["Cutoff"]
+    bondList = ["Bondlength"]
     warningsList = ["Warnings"]
     
     # iterate over all the *.castep files in the directory
@@ -369,7 +370,7 @@ def getInfoMultipleFiles():
             if numwords > 3 and words[1] == 'Final' and words[2] == 'Enthalpy':
                 finalE = float(words[4])
 
-            if numwords > 5 and words[0] == 'Sge' and words[1] == '1' and words[3] == 'Si':
+            if numwords > 5 and words[0] == 'Si' and words[1] == '1' and words[3] == 'Si':
                 bondlength = float(words[6])
 
             if numwords > 8 and words[0] == '***' and words[6] == 'warnings':
@@ -378,9 +379,12 @@ def getInfoMultipleFiles():
             # This is just output to the screen - show summary of warnings
             # The number of warnings is also written to the output file.
             # These are just checks to make sure we catch any errors.
-            if numwords > 0 and words[0] == 'WARNING':
-                print(filename+": "+line)
-
+            #if numwords > 0 and words[0] == 'WARNING':
+            if 'WARNING' in line:
+                print('WARNING in '+filename+": "+line,end='')
+            if 'warning' in line:
+                print('WARNING in '+filename+": "+line,end='')
+                
         nameNoExt = str(os.path.splitext(filename)[0])
         
         filenameList.append(nameNoExt)
@@ -391,7 +395,7 @@ def getInfoMultipleFiles():
         
         # Close file
         myfile.close()
-
+        
     # convert final lists to numpy arrays
     filenameList = np.array(filenameList)
     cutoffList = np.array(cutoffList)
@@ -408,12 +412,26 @@ def getInfoMultipleFiles():
 ####################################################################################################
 # Get information from .castep output file
 ####################################################################################################
-def getInfoSingleFile(filename):
+def getTotalEnergyConvergence(filename):
     import os
     import numpy as np
+
+    # Just the name, no extension
+    name = filename
+
+    # with .castep extension
+    castepfile = filename+".castep"
     
-    # append extension to filename
-    filename = filename+".geom"
+    # check the castep file for errors (display them on screen)
+    with open(castepfile,'r') as myfile:
+        for line in myfile:
+            if 'WARNING' in line:
+                print('WARNING in '+filename+': '+line,end='')
+            if 'warning' in line:
+                print('WARNING in '+filename+': '+line,end='')
+        
+    # with .geom extension - use this file for getting final energies for each step
+    filename = name+".geom"
 
     # info
     print("Reading file", filename)
