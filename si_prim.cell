@@ -1,0 +1,19 @@
+! Silicon primitive unit cell
+! optimised with (11 11 11) mp grid, LDA, 400 eV cut off.
+
+%block lattice_cart
+       2.7005057     2.7005057    -0.0000000
+       2.7005057    -0.0000000     2.7005057
+       0.0000000     2.7005057     2.7005057
+%endblock lattice_cart
+
+%block positions_frac
+       Si 0.00 0.00 0.00
+       Si 0.25 0.25 0.25
+%endblock positions_frac
+
+fix_all_cell		:	false
+
+symmetry_generate
+
+kpoint_mp_grid 11 11 11
