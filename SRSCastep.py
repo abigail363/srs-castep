@@ -197,37 +197,13 @@ def readCellDetailed(name):
       for line in coordsList:
         words = line.split()
         elements.append(words[0])
-        x = float(words[1]) * unitcell[0,0]
-        y = float(words[2]) * unitcell[1,1]
-        z = float(words[3]) * unitcell[2,2]
+        x = float(words[1])
+        y = float(words[2])
+        z = float(words[3])
         coords.append([x,y,z])
       coords = np.array(coords)
       elements = np.array(elements)
       
-      
-
-    # read atomic coords (absolute)
-    if numwords > 0 and str.upper(words[0]) == '%BLOCK' and str.upper(words[1]) == 'POSITIONS_ABS':
-      # loop through the coords until we get to the endblock statement and read each line into a list
-      stop = 'no'
-      coordsList = []
-      while stop == 'no':
-        i+=1
-        words = lines[i].split()
-        if str.upper(words[0]) == '%ENDBLOCK':
-          stop = 'yes'
-          break
-        coordsList.append(lines[i])
-      i+=1 # skip endblock statement
-      # process the list into numpy array
-      elements = []
-      coords = []
-      for line in coordsList:
-        words = line.split()
-        elements.append(words[0])
-        coords.append([float(words[1]), float(words[2]), float(words[3])])
-      coords = np.array(coords)
-      elements = np.array(elements)
 
     # write line to list
     cellFileList.append(lines[i])
@@ -262,11 +238,11 @@ def writeCellDetailed(name,unitcell,elements,coords,cellFileContents):
   myfile.write('%ENDBLOCK LATTICE_CART\n\n')
 
   # write coords
-  myfile.write('%BLOCK POSITIONS_ABS\n')
+  myfile.write('%BLOCK POSITIONS_FRAC\n')
   xyz = np.vstack((elements.T,coords.T)).T
   for line in xyz:
     myfile.write('{:20}{:20}{:20}{:20}\n'.format(line[0],line[1],line[2],line[3]))
-  myfile.write('%ENDBLOCK POSITIONS_ABS\n\n')
+  myfile.write('%ENDBLOCK POSITIONS_FRAC\n\n')
   
   for line in cellFileContents:
     myfile.write(line)

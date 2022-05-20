@@ -32,13 +32,16 @@ step = 25
 # Get file name from command line options.
 readName=str(sys.argv[1])    # First argument on command line; specifies the coordinates in the desired orientation.
 
+# remove extension if present
+readName = os.path.splitext(readName)[0]
+
 # Read parameters from parameter file
 params = cas.readParam(readName)
 
 # Read cell file 
 cellContents = cas.readCell(readName)
 
-for var in range(start,end,step):
+for var in range(start,end+step,step):
     writeName = readName + "_" + format(var, '04d')
     params['cut_off_energy'] = var
     cas.writeParam(writeName,params)

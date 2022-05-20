@@ -8,6 +8,7 @@
 # Load required packages
 import numpy as np
 import sys
+import os
 
 # load main functions
 import SRSCastep as cas
@@ -27,6 +28,9 @@ if len(sys.argv) != 2:
 # Get file name from command line options.
 readName=str(sys.argv[1])    # First argument on command line; specifies the coordinates in the desired orientation.
 
+# remove extension if present
+readName = os.path.splitext(readName)[0]
+
 # Read parameters from parameter file
 params = cas.readParam(readName)
 
@@ -37,10 +41,18 @@ vacStart = 15
 vacEnd = 50
 vacSep = 5
 
+zcellOrig = unitcell[2,2]
+coordsOrig = coords
+ 
 for zcell in range(vacStart,vacEnd+vacSep,vacSep):
 
+    # new value for the zrange
     unitcell[2,2] = zcell
+
+    # rescale the z fractional coordinates
+    coords = coordsOrig*[1,1,zcellOrig/zcell]
     
+        
     # write output files
     writeName = readName + "_" + "vac_"+str(zcell)
     cas.writeParam(writeName,params)
