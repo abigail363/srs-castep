@@ -23,7 +23,7 @@ def readParam(name):
   
   # Output to screen
   print()
-  print("Opening "+ filename)
+  print("Opening "+ filename+" for reading.")
 
   # Open file
   myfile = open(filename, "r")
@@ -42,11 +42,13 @@ def readParam(name):
 
   colWidth=max(len(param) for param in paramsDict)
 
-  print()
-  for param in paramsDict:
-    print('{col1:{width}}  {col2}'.format(col1=param,col2=paramsDict[param],width=colWidth))
-  print()
-  print()
+#  print()
+#  for param in paramsDict:
+#    print('{col1:{width}}  {col2}'.format(col1=param,col2=paramsDict[param],width=colWidth))
+#  print()
+#  print()
+
+  print("DONE")
   
   # Close file
   myfile.close()
@@ -211,6 +213,7 @@ def readCellDetailed(name):
     # add one to loop counter
     i+=1
 
+  print('DONE')
   return unitcell, elements, coords, cellFileList
 
 
@@ -248,8 +251,7 @@ def writeCellDetailed(name,unitcell,elements,coords,cellFileContents):
     myfile.write(line)
 
   print("DONE")
-  print()
-    
+  
   # Close file
   myfile.close()
   return
