@@ -75,4 +75,8 @@ elements = np.array(elementList)
 # write the new cell file
 cas.writeCellDetailed(outfilename,unitcell,elements,coords,cellFileList)
 
+# read and write the original parameter file with new filename
+paramsDict = cas.readParam(filename)
+cas.writeParam(outfilename,paramsDict)
+
 
