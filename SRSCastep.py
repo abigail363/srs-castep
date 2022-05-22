@@ -10,8 +10,8 @@
 # This provides a header output when the programme starts
 ####################################################################################################
 def startscript():
-  print("CASTEP tools")
-  print("Steven R. Schofield (Apr 2022) University College London\n")
+  print("CASTEP tools *******************************************************************************")
+  print("Steven R. Schofield, University College London (April 2022, GNU General Public License v3.0)")
 
 ####################################################################################################
 # Reads in a parameter file and returns as python dictionary
@@ -255,50 +255,6 @@ def writeCellDetailed(name,unitcell,elements,coords,cellFileContents):
   # Close file
   myfile.close()
   return
-
-
-
-####################################################################################################
-# Modify cell list
-# Takes as input a list of strings that is the original cell file
-# Modifies one part of it, which is specified by the option "param".
-####################################################################################################
-def modifyCell(cellList,param,value):
-
-  print("Modifying cell file, parameter:",param)
-  
-  newCellList = []
-
-  # how many lines in the cell list 
-  length = len(cellList)
-
-  # if parameter is "vac" meaning we are changing the vacuum (z) separation:
-  if param == 'vac':
-    i = 0 
-    while i < length:
-      words = cellList[i].split()
-      numwords = len(words)
-      if numwords > 0 and str.upper(words[0]) == '%BLOCK' and str.upper(words[1]) == 'LATTICE_CART':
-        break
-      i+=1
-
-    # The line number of the cellList that contains the z specification (assumes cubic cell)
-    cellLine = i+3
-
-    # modify
-    line = cellList[cellLine]
-    words = line.split()
-    newCellList = cellList
-    newCellList[cellLine] = "\t"+words[0]+"\t"+words[1]+"\t"+str(float(value))+"\n"
-
-  # THIS FUNCTION CAN BE MODIFIED TO ADD MORE POSSIBLE CHANGES TO A CELL FILE
-  # THIS CAN BE DONE BY ADDING HERE A STATEMENT:
-  # if param == 'yourparam'
-  # FOLLOWED BY SUITABLE CODE FOR SEARCHING AND MODIFYING THE CELL LIST
-  
-  return newCellList
-
-
 
 
 

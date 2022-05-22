@@ -1,0 +1,7 @@
+task                     geometryOptimisation
+xc_functional            LDA
+fix_occupancy            true
+opt_strategy             speed
+num_dump_cycles          0
+write_formatted_density  TRUE
+calculate_densdiff       TRUE
