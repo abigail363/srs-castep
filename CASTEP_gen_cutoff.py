@@ -8,6 +8,7 @@
 # Load required packages
 import numpy as np
 import sys
+import os
 
 # load main functions
 import SRSCastep as cas
